@@ -1,0 +1,6 @@
+for i in `ls *.png`
+do
+    echo "Converting $i to JPG..."
+    new_file=`echo "$i" | awk '{gsub(/\.png/,".jpg")}; 1'`
+    convert $i -quality 100 $new_file
+done
