@@ -14,11 +14,12 @@ end
 class Tester
   include Colors
   
-  attr_accessor :source_file, :executable_file
+  attr_accessor :source_file, :executable_file, :filters
   
-  def initialize(source_file)
+  def initialize(source_file, filters = [])
     @source_file = source_file
     @executable_file = File.basename(source_file, File.extname(source_file))
+    @filters = filters
   end
   
   def run
@@ -41,6 +42,7 @@ class Tester
   end
   
   def run_with_all_input_files!
+    puts gray("*** Filtering files with these regexps: #{filters.join(",")}") if filters.any?
     all_input_files.each do |input_file|
       puts gray("*** Running with '#{input_file}'...")
       output_file = "/tmp/#{input_file}.out"
@@ -82,13 +84,17 @@ class Tester
   end
   
   def all_input_files
-    Dir.glob("*in*").select { |f| File.file?(f) }.reject { |f| f =~ /out/ }
+    files = Dir.glob("*in*").select { |f| File.file?(f) }.reject { |f| f =~ /out/ }
+    if filters.any?
+      files = files.select { |f| filters.map { |filter| f =~ /#{filter}/ }.compact.any? }
+    end
+    files
   end
 end
 
-source_file = ARGV.first
+source_file = ARGV.shift
 if source_file.nil?
-  puts "Usage: #{File.basename(__FILE__)} source-file"
+  puts "Usage: #{File.basename(__FILE__)} source-file [filter1 [filter2 [filter 3...]]]"
   exit -1
 end
 
@@ -97,4 +103,4 @@ if !File.file?(source_file)
   exit -1
 end
 
-Tester.new(source_file).run
+Tester.new(source_file, ARGV).run
