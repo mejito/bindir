@@ -44,14 +44,17 @@ class Tester
     all_input_files.each do |input_file|
       puts gray("*** Running with '#{input_file}'...")
       output_file = "/tmp/#{input_file}.out"
+      time_before = Time.now
       system "./#{executable_file} < #{input_file} > #{output_file}"
+      elapsed_time = Time.now - time_before
+      
       if !$?.success?
         puts red("*** Runtime error with '#{input_file}'")
         next
       end
       
       if !has_matching_output_file?(input_file)
-        puts yellow("*** No errors")
+        puts yellow("*** No errors (#{elapsed_time} sec)")
         system "cat #{output_file}"
         next
       end
@@ -59,9 +62,9 @@ class Tester
       # Has matching output file
       system "diff #{output_file} #{matching_output_file(input_file)}"
       if $?.success?
-        puts green("*** Output matches #{matching_output_file(input_file)}")
+        puts green("*** Output matches #{matching_output_file(input_file)} (#{elapsed_time} sec)")
       else
-        puts red("*** There are differences")
+        puts red("*** There are differences (#{elapsed_time} sec)")
       end
     end
   end
