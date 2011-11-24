@@ -47,7 +47,7 @@ class Tester
       puts gray("*** Running with '#{input_file}'...")
       output_file = "/tmp/#{input_file}.out"
       time_before = Time.now
-      system "./#{executable_file} < #{input_file} > #{output_file}"
+      system execution_command(input_file, output_file)
       elapsed_time = Time.now - time_before
       
       if !$?.success?
@@ -79,8 +79,28 @@ class Tester
     some_input_file.gsub("in", "out")
   end
   
+  def execution_command(input_file, output_file)
+    if java?
+      "java #{executable_file} < #{input_file} > #{output_file}"
+    else
+      "./#{executable_file} < #{input_file} > #{output_file}"
+    end
+  end
+  
   def compilation_command
-    "g++ #{source_file} -o #{executable_file}"
+    if java?
+      "javac #{source_file}"
+    else
+      "g++ #{source_file} -o #{executable_file} -O2 -DLOCAL"
+    end
+  end
+  
+  def c_plus_plus?
+    [".c", ".cc", ".cpp"].include? File.extname(source_file)
+  end
+  
+  def java?
+    File.extname(source_file) == ".java"
   end
   
   def all_input_files
