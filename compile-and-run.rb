@@ -66,7 +66,7 @@ class Tester
       if $?.success?
         puts green("*** Output matches #{matching_output_file(input_file)} (#{elapsed_time} sec)")
       else
-        puts red("*** There are differences (#{elapsed_time} sec)")
+        puts red("*** There are differences with #{matching_output_file(input_file)} (#{elapsed_time} sec)")
       end
     end
   end
@@ -81,7 +81,7 @@ class Tester
   
   def execution_command(input_file, output_file)
     if java?
-      "java #{executable_file} < #{input_file} > #{output_file}"
+      "java -enableassertions #{executable_file} < #{input_file} > #{output_file}"
     else
       "./#{executable_file} < #{input_file} > #{output_file}"
     end
@@ -91,7 +91,8 @@ class Tester
     if java?
       "javac #{source_file}"
     else
-      "g++ #{source_file} -o #{executable_file} -O2 -DLOCAL"
+      # "g++ #{source_file} -o #{executable_file} -O2 -DLOCAL"
+      "g++ #{source_file} -o #{executable_file} -DLOCAL"
     end
   end
   
@@ -104,7 +105,8 @@ class Tester
   end
   
   def all_input_files
-    files = Dir.glob("*in*").select { |f| File.file?(f) }.reject { |f| f =~ /out/ }
+    invalid_input_regexps = [ /out/, /\.java/, /\.class/, /\.cpp/ ]
+    files = Dir.glob("*in*").select { |f| File.file?(f) }.reject { |f| invalid_input_regexps.count { |regexp| f =~ regexp } > 0 }
     if filters.any?
       files = files.select { |f| filters.map { |filter| f =~ /#{filter}/ }.compact.any? }
     end
