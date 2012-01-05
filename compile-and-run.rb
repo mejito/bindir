@@ -81,7 +81,7 @@ class Tester
   
   def execution_command(input_file, output_file)
     if java?
-      "java -enableassertions #{executable_file} < #{input_file} > #{output_file}"
+      "java -enableassertions -Xmx256m #{executable_file} < #{input_file} > #{output_file}"
     else
       "./#{executable_file} < #{input_file} > #{output_file}"
     end
@@ -91,7 +91,7 @@ class Tester
     if java?
       "javac #{source_file}"
     else
-      # "g++ #{source_file} -o #{executable_file} -O2 -DLOCAL"
+      #"g++ #{source_file} -o #{executable_file} -O2 -DLOCAL -Wall -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC"
       "g++ #{source_file} -o #{executable_file} -DLOCAL"
     end
   end
