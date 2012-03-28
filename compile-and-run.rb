@@ -27,6 +27,7 @@ class Tester
     run_with_all_input_files!
   rescue => e
     puts red("*** #{e.message}")
+    exit 1 # Exit with a non-zero signal
   end
   
   private
