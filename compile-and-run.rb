@@ -13,15 +13,15 @@ end
 
 class Tester
   include Colors
-  
+
   attr_accessor :source_file, :executable_file, :filters
-  
+
   def initialize(source_file, filters = [])
     @source_file = source_file
     @executable_file = File.basename(source_file, File.extname(source_file))
     @filters = filters
   end
-  
+
   def run
     compile!
     run_with_all_input_files!
@@ -29,9 +29,9 @@ class Tester
     puts red("*** #{e.message}")
     exit 1 # Exit with a non-zero signal
   end
-  
+
   private
-  
+
   def compile!
     puts gray("*** Compiling #{source_file} with '#{compilation_command}'...")
     system compilation_command
@@ -41,7 +41,7 @@ class Tester
     puts green("*** Compiled")
     puts
   end
-  
+
   def run_with_all_input_files!
     puts gray("*** Filtering files with these regexps: #{filters.join(",")}") if filters.any?
     all_input_files.each do |input_file|
@@ -50,18 +50,18 @@ class Tester
       time_before = Time.now
       system execution_command(input_file, output_file)
       elapsed_time = Time.now - time_before
-      
+
       if !$?.success?
         puts red("*** Runtime error with '#{input_file}'")
         next
       end
-      
+
       if !has_matching_output_file?(input_file)
         puts yellow("*** No errors (#{elapsed_time} sec)")
         system "cat #{output_file}"
         next
       end
-      
+
       # Has matching output file
       system "diff #{output_file} #{matching_output_file(input_file)}"
       if $?.success?
@@ -71,15 +71,16 @@ class Tester
       end
     end
   end
-  
+
   def has_matching_output_file?(some_input_file)
     File.file?(matching_output_file(some_input_file))
   end
-  
+
   def matching_output_file(some_input_file)
-    some_input_file.gsub("in", "out")
+    # Replace just the last occurrence of "in" with "out"
+    some_input_file.sub(/(.*)in/, "\\1out")
   end
-  
+
   def execution_command(input_file, output_file)
     if java?
       "java -enableassertions -Xmx256m #{executable_file} < #{input_file} > #{output_file}"
@@ -87,7 +88,7 @@ class Tester
       "./#{executable_file} < #{input_file} > #{output_file}"
     end
   end
-  
+
   def compilation_command
     if java?
       "javac #{source_file}"
@@ -96,15 +97,15 @@ class Tester
       "g++ #{source_file} -o #{executable_file} -DLOCAL"
     end
   end
-  
+
   def c_plus_plus?
     [".c", ".cc", ".cpp"].include? File.extname(source_file)
   end
-  
+
   def java?
     File.extname(source_file) == ".java"
   end
-  
+
   def all_input_files
     invalid_input_regexps = [ /out/, /\.java/, /\.class/, /\.cpp/ ]
     files = Dir.glob("*in*").select { |f| File.file?(f) }.reject { |f| invalid_input_regexps.count { |regexp| f =~ regexp } > 0 }
