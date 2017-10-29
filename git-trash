@@ -1,3 +1,0 @@
-#!/bin/sh
-
-git commit -n -a -m "Throwing away..." && git reset --hard HEAD^
