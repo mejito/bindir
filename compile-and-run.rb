@@ -92,9 +92,11 @@ class Tester
   def compilation_command
     if java?
       "javac #{source_file}"
+    elsif go?
+      "go build -o #{executable_file} #{source_file}"
     else
       #"g++ #{source_file} -o #{executable_file} -O2 -DLOCAL -Wall -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC"
-      "g++ #{source_file} -o #{executable_file} -DLOCAL"
+      "g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++11"
     end
   end
 
@@ -104,6 +106,10 @@ class Tester
 
   def java?
     File.extname(source_file) == ".java"
+  end
+
+  def go?
+    File.extname(source_file) == ".go"
   end
 
   def all_input_files
