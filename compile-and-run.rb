@@ -84,6 +84,8 @@ class Tester
   def execution_command(input_file, output_file)
     if java?
       "java -enableassertions -Xmx256m #{executable_file} < #{input_file} > #{output_file}"
+    elsif ruby?
+      "ruby #{source_file} < #{input_file} > #{output_file}"
     else
       "./#{executable_file} < #{input_file} > #{output_file}"
     end
@@ -94,6 +96,8 @@ class Tester
       "javac #{source_file}"
     elsif go?
       "go build -o #{executable_file} #{source_file}"
+    elsif ruby?
+      "true"
     else
       #"g++ #{source_file} -o #{executable_file} -O2 -DLOCAL -Wall -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC"
       "g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17"
@@ -110,6 +114,10 @@ class Tester
 
   def go?
     File.extname(source_file) == ".go"
+  end
+
+  def ruby?
+    File.extname(source_file) == ".rb"
   end
 
   def all_input_files
