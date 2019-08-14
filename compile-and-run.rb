@@ -96,7 +96,7 @@ class Tester
       "go build -o #{executable_file} #{source_file}"
     else
       #"g++ #{source_file} -o #{executable_file} -O2 -DLOCAL -Wall -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC"
-      "g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++11"
+      "g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17"
     end
   end
 
