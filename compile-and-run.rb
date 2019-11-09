@@ -121,12 +121,25 @@ class Tester
   end
 
   def all_input_files
-    invalid_input_regexps = [ /out/, /\.java/, /\.class/, /\.cpp/ ]
-    files = Dir.glob("*in*").select { |f| File.file?(f) }.reject { |f| invalid_input_regexps.count { |regexp| f =~ regexp } > 0 }
+    files = Dir.glob("*in*").select { |f| File.file?(f) && valid_input_file?(f) }
     if filters.any?
       files = files.select { |f| filters.map { |filter| f =~ /#{filter}/ }.compact.any? }
     end
     files
+  end
+
+  def valid_input_file?(file)
+    # Try to discard source code.
+    invalid_input_regexps = [ /out/, /\.java/, /\.class/, /\.cpp/, /\.go/ ]
+    return false if invalid_input_regexps.any? { |regexp| file =~ regexp }
+
+    # Discard compiled binaries that happen to have "in" in their name.
+    # Example:
+    #  $ file problem2_offline
+    #    problem2_offline: Mach-O 64-bit executable x86_64
+    return false if `file #{file}` =~ /executable/
+
+    true
   end
 end
 
