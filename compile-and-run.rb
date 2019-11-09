@@ -46,7 +46,7 @@ class Tester
     puts gray("*** Filtering files with these regexps: #{filters.join(",")}") if filters.any?
     all_input_files.each do |input_file|
       puts gray("*** Running with '#{input_file}'...")
-      output_file = "/tmp/#{input_file}.out"
+      output_file = "/tmp/#{input_file.gsub("/", "_")}.out"
       time_before = Time.now
       system execution_command(input_file, output_file)
       elapsed_time = Time.now - time_before
@@ -122,6 +122,10 @@ class Tester
 
   def all_input_files
     files = Dir.glob("*in*").select { |f| File.file?(f) && valid_input_file?(f) }
+    if files.empty?
+      # If no input files are present, just run the binary with no input.
+      files = ["/dev/null"]
+    end
     if filters.any?
       files = files.select { |f| filters.map { |filter| f =~ /#{filter}/ }.compact.any? }
     end
@@ -138,7 +142,6 @@ class Tester
     #  $ file problem2_offline
     #    problem2_offline: Mach-O 64-bit executable x86_64
     return false if `file #{file}` =~ /executable/
-
     true
   end
 end
