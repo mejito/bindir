@@ -18,7 +18,7 @@ class Tester
 
   def initialize(source_file, filters = [])
     @source_file = source_file
-    @executable_file = File.basename(source_file, File.extname(source_file))
+    @executable_file = File.basename(source_file, File.extname(source_file)) + ".bin"
     @filters = filters
   end
 
