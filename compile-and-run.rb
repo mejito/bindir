@@ -100,7 +100,10 @@ class Tester
       "true"
     else
       #"g++ #{source_file} -o #{executable_file} -O2 -DLOCAL -Wall -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC"
-      "g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17"
+      #"g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17"
+      #"g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17"
+      # See https://clang.llvm.org/docs/AddressSanitizer.html for more info about ASan.
+      "clang++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17 -fsanitize=address -fno-omit-frame-pointer"
     end
   end
 
