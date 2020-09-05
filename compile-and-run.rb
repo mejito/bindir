@@ -103,7 +103,7 @@ class Tester
       #"g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17"
       #"g++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17"
       # See https://clang.llvm.org/docs/AddressSanitizer.html for more info about ASan.
-      "clang++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17 -fsanitize=address -fno-omit-frame-pointer"
+      "clang++ #{source_file} -o #{executable_file} -DLOCAL -std=c++17 -fsanitize=address -fno-omit-frame-pointer -O3"
     end
   end
 
