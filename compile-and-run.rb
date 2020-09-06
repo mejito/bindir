@@ -86,6 +86,8 @@ class Tester
       "java -enableassertions -Xmx256m #{executable_file} < #{input_file} > #{output_file}"
     elsif ruby?
       "ruby #{source_file} < #{input_file} > #{output_file}"
+    elsif python?
+      "python3 #{source_file} < #{input_file} > #{output_file}"
     else
       "./#{executable_file} < #{input_file} > #{output_file}"
     end
@@ -96,7 +98,7 @@ class Tester
       "javac #{source_file}"
     elsif go?
       "go build -o #{executable_file} #{source_file}"
-    elsif ruby?
+    elsif ruby? || python?
       "true"
     else
       #"g++ #{source_file} -o #{executable_file} -O2 -DLOCAL -Wall -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC"
@@ -123,6 +125,10 @@ class Tester
     File.extname(source_file) == ".rb"
   end
 
+  def python?
+    File.extname(source_file) == ".py"
+  end
+
   def all_input_files
     files = Dir.glob("*in*").select { |f| File.file?(f) && valid_input_file?(f) }
     if files.empty?
@@ -137,7 +143,7 @@ class Tester
 
   def valid_input_file?(file)
     # Try to discard source code.
-    invalid_input_regexps = [ /out/, /\.java/, /\.class/, /\.cpp/, /\.go/ ]
+    invalid_input_regexps = [ /out/, /\.java/, /\.class/, /\.cpp/, /\.go/, /\.py/ ]
     return false if invalid_input_regexps.any? { |regexp| file =~ regexp }
 
     # Discard compiled binaries that happen to have "in" in their name.
