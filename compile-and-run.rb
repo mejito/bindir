@@ -138,7 +138,7 @@ class Tester
     if filters.any?
       files = files.select { |f| filters.map { |filter| f =~ /#{filter}/ }.compact.any? }
     end
-    files
+    files.sort
   end
 
   def valid_input_file?(file)
