@@ -2,7 +2,7 @@
 
 Dir.glob("*").select { |s| s =~ /\.in/ }.sort_by { |s| s.to_i }.each do |input|
   puts "Running it for #{input}..."
-  cmd = "#{ARGV[0]} < #{input} > #{input.gsub("in", "out")}"
+  cmd = "#{ARGV.join(" ")} < #{input} > #{input.gsub("in", "out")}"
   puts cmd
   system cmd
 end
